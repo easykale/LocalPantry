@@ -1,0 +1,1 @@
+docker run -it --rm --name explorer -v %cd%:/app -w /app swift-ui-app bash

@@ -1,0 +1,12 @@
+
+
+services:
+  swift-builder:
+    # We use the specific stable snapshot to avoid version surprises
+    image: ghcr.io/swiftwasm/swift:wasm-5.10-SNAPSHOT-2024-03-26-a
+    container_name: swift_explorer
+    working_dir: /app
+    volumes:
+      - .:/app
+    # Keep the container running so we can shell into it
+    command: tail -f /dev/null
