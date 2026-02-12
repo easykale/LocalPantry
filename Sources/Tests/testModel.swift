@@ -1,3 +1,5 @@
+import Foundation
+
 struct ModelTest {
     func assert(condition:Bool, message:String) {
         print("========================")
@@ -51,8 +53,7 @@ struct ModelTest {
 
         //Testcase: ensure item can be instantiated
         var item = TransactionLog(
-        UUID: "12345ABC", 
-        timestamp: "59/41/23/01/12/2026", 
+        timestamp: Date(), 
         type: .Add, 
         itemName: "potato",
         serialNumber: "12345",
@@ -68,8 +69,7 @@ struct ModelTest {
         //Testcase: ensure item can be instantiated with optional fields
         print("Testcase 2:")
         item = TransactionLog(
-        UUID: "1a2b3c", 
-        timestamp: "59/41/23/01/12/2026", 
+        timestamp: Date(), 
         type: .Remove, 
         itemName: "banana",
         quantityChanged: -3 

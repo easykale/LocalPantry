@@ -1,22 +1,23 @@
+import Foundation
 struct InventoryItem {
     var UUID: String
     var name: String
-    var serialNumber: String?
+    var serialNumber: String? //optional
     var quantity: Int
-    var expiryDate: String?   //dd/mm/yyyy, if no day, itll be default 01
+    var expiryDate: String?   //optional, formatted as dd/mm/yyyy, if no day, itll be default 01
+
 }
 
-struct TransactionLog {
-    enum Flow {
+enum Flow {
         case Add
         case Remove
     }
 
-    var UUID: String
-    var timestamp: String  //ss/mm/hh/dd/mm/yyyy
+struct TransactionLog {
+    var timestamp: Date  //YYYY-MM-DD HH:MM:SS +0000
     var type: Flow
     var itemName: String
-    var serialNumber: String?
+    var serialNumber: String? //optional, copied from InventoryItem
     var quantityChanged: Int
 }
 

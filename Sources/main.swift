@@ -1,5 +1,8 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
+import Foundation
 print("Hello, world!")
 
 
+var testModel = ModelTest()
+var testViewModel = TestViewModel()
+testModel.runAll()
+testViewModel.runAll()
