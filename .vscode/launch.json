@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-student-challenge}",
+            "name": "Debug app",
+            "target": "app",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug app"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-student-challenge}",
+            "name": "Release app",
+            "target": "app",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release app"
+        }
+    ]
+}
