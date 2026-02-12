@@ -29,7 +29,6 @@ class NOUIInventoryStore{
         )
         
         saveData()
-        print(items)
     }
     
     func removeItem(item: InventoryItem, quantityToRemove: Int) {
@@ -52,7 +51,6 @@ class NOUIInventoryStore{
         )
         
         saveData()
-        print(items)
     }
 
     
@@ -66,7 +64,6 @@ class NOUIInventoryStore{
         )
 
         history.insert(log, at: 0)
-        print(history)
     }
     
     // MARK: - Persistence Stubs (Ticket S1-04 Prep)

@@ -14,7 +14,7 @@ struct ModelTest {
 
     func testInventoryItem() {
         print("===Starting testInventoryItem===")
-        print("Testcase 1:")
+        print("\nTestcase 1:")
 
         //Testcase: ensure item can be instantiated
         var item = InventoryItem(
@@ -32,7 +32,7 @@ struct ModelTest {
         }
 
         //Testcase: ensure item can be instantiated with optional fields
-        print("Testcase 2:")
+        print("\nTestcase 2:")
         item = InventoryItem(
             UUID: "1A2B3C", 
             name: "banana",  
@@ -49,7 +49,7 @@ struct ModelTest {
 
     func testTransactionLog() {
         print("===Starting testTranscationLog===")
-        print("Testcase 1:")
+        print("\nTestcase 1:")
 
         //Testcase: ensure item can be instantiated
         var item = TransactionLog(
@@ -67,7 +67,7 @@ struct ModelTest {
         }
 
         //Testcase: ensure item can be instantiated with optional fields
-        print("Testcase 2:")
+        print("\nTestcase 2:")
         item = TransactionLog(
         timestamp: Date(), 
         type: .Remove, 
@@ -84,13 +84,13 @@ struct ModelTest {
     }
 
     mutating func runAll() {
-        print("-------------Starting Unit Testing-------------")
+        print("-------------Starting Model Testing-------------")
 
         testInventoryItem()
         print()
         testTransactionLog()
 
-        print("--------------------End-----------------------")
+        print("--------------------End-----------------------\n")
     }
 }
 
