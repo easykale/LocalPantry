@@ -1,5 +1,5 @@
 import Foundation
-struct InventoryItem {
+struct InventoryItem: Codable {
     var UUID: String
     var name: String
     var serialNumber: String? //optional
@@ -8,12 +8,12 @@ struct InventoryItem {
 
 }
 
-enum Flow {
+enum Flow: String, Codable {
         case Add
         case Remove
     }
 
-struct TransactionLog {
+struct TransactionLog: Codable {
     var timestamp: Date  //YYYY-MM-DD HH:MM:SS +0000
     var type: Flow
     var itemName: String

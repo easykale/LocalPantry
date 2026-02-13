@@ -12,7 +12,7 @@ class NOUIInventoryStore{
     }
     
     func addItem(UUID: String, name: String, serial: String? = nil, quantity: Int, expiry: String? = nil) {
-        let newItem = InventoryItem(
+        let newItem: InventoryItem = InventoryItem(
             UUID: UUID,
             name: name,
             serialNumber: serial,
@@ -28,7 +28,7 @@ class NOUIInventoryStore{
             qtyChanged: quantity
         )
         
-        saveData()
+        PersistenceManager.save(newItem, to: "items" )
     }
     
     func removeItem(item: InventoryItem, quantityToRemove: Int) {
@@ -50,12 +50,12 @@ class NOUIInventoryStore{
             qtyChanged: quantityToRemove
         )
         
-        saveData()
+        //saveee
     }
 
     
     private func logTransaction(type: Flow, item: InventoryItem, qtyChanged: Int) {
-        let log = TransactionLog(
+        let log: TransactionLog = TransactionLog(
             timestamp: Date(), //time in UTC, need to use DateFormatter() for output
             type: type,
             itemName: item.name,
@@ -64,17 +64,8 @@ class NOUIInventoryStore{
         )
 
         history.insert(log, at: 0)
-    }
-    
-    // MARK: - Persistence Stubs (Ticket S1-04 Prep)
-    
-    func saveData() {
-        // Placeholder: This will eventually write 'items' and 'history' to JSON files.
-        print("Data saved (simulation). Items count: \(items.count)")
-    }
-    
-    func loadData() {
-        // Placeholder: This will read from FileManager.
+        
+        PersistenceManager.append(log, to: "history")
     }
 
     func debugTools() {
