@@ -2,13 +2,11 @@ import Foundation
 class NOUIInventoryStore{
 
     var items: [InventoryItem] = []
-    var history: [TransactionLog] = []
+    var history: [TransactionLog] = [] //use as a stack
     
-    // MARK: - Initialization
     init() {
-        // In Sprint 1 / S1-04, we will replace this with loadJSON()
-        // For now, we load empty or dummy data to ensure the setup works.
-        print("InventoryStore initialized. Ready for data.")
+        self.items = Service.load(using: PersistenceManager.loadItems, toRead:  "items", as: InventoryItem.self) 
+        self.history = Service.load(using: PersistenceManager.loadHistory, toRead: "history", as: TransactionLog.self)
     }
     
     func addItem(UUID: String, name: String, serial: String? = nil, quantity: Int, expiry: String? = nil) {
@@ -28,9 +26,9 @@ class NOUIInventoryStore{
             qtyChanged: quantity
         )
         
-        PersistenceManager.save(newItem, to: "items" )
+        Service.saveOrAppend(PersistenceManager.save, items, to: "items")
     }
-    
+
     func removeItem(item: InventoryItem, quantityToRemove: Int) {
         guard let index = items.firstIndex(where: { $0.name == item.name }) else { return }
         let currentItem = items[index]
@@ -50,10 +48,9 @@ class NOUIInventoryStore{
             qtyChanged: quantityToRemove
         )
         
-        //saveee
+        Service.saveOrAppend(PersistenceManager.save, items, to: "items")
     }
 
-    
     private func logTransaction(type: Flow, item: InventoryItem, qtyChanged: Int) {
         let log: TransactionLog = TransactionLog(
             timestamp: Date(), //time in UTC, need to use DateFormatter() for output
@@ -63,9 +60,8 @@ class NOUIInventoryStore{
             quantityChanged: qtyChanged
         )
 
-        history.insert(log, at: 0)
-        
-        PersistenceManager.append(log, to: "history")
+        history.append(log)
+        Service.saveOrAppend(PersistenceManager.append, history, to: "history")
     }
 
     func debugTools() {
