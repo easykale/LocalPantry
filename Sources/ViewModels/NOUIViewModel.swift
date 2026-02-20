@@ -1,8 +1,9 @@
 import Foundation
-class NOUIInventoryStore{
+import SwiftUI
+class InventoryStore: ObservableObject{
 
-    var items: [InventoryItem] = []
-    var history: [TransactionLog] = [] //use as a stack
+    @Published var items: [InventoryItem] = []
+    @Published var history: [TransactionLog] = [] //use as a stack
     
     init() {
         self.items = Service.load(using: PersistenceManager.loadItems, toRead:  "items", as: InventoryItem.self) 
@@ -11,7 +12,7 @@ class NOUIInventoryStore{
     
     func addItem(UUID: String, name: String, serial: String? = nil, quantity: Int, expiry: String? = nil) {
         let newItem: InventoryItem = InventoryItem(
-            UUID: UUID,
+            id: UUID,
             name: name,
             serialNumber: serial,
             quantity: quantity,

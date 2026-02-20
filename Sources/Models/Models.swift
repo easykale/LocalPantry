@@ -1,11 +1,11 @@
 import Foundation
-struct InventoryItem: Codable {
-    var UUID: String
+import SwiftUI
+struct InventoryItem: Codable, Identifiable {
+    var id: String
     var name: String
     var serialNumber: String? //optional
     var quantity: Int
     var expiryDate: String?   //optional, formatted as dd/mm/yyyy, if no day, itll be default 01
-
 }
 
 enum Flow: String, Codable {
@@ -20,4 +20,3 @@ struct TransactionLog: Codable {
     var serialNumber: String? //optional, copied from InventoryItem
     var quantityChanged: Int
 }
-
