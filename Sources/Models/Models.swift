@@ -5,7 +5,7 @@ struct InventoryItem: Codable, Identifiable {
     var name: String
     var serialNumber: String? //optional
     var quantity: Int
-    var expiryDate: String?   //optional, formatted as dd/mm/yyyy, if no day, itll be default 01
+    var expiryDate: Date?   //optional, formatted as dd/mm/yyyy, if no day, itll be default 01
 }
 
 enum Flow: String, Codable {

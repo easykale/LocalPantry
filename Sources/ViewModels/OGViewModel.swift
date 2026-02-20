@@ -10,7 +10,7 @@ class InventoryStore: ObservableObject{
         self.history = Service.load(using: PersistenceManager.loadHistory, toRead: "history", as: TransactionLog.self)
     }
     
-    func addItem(UUID: String, name: String, serial: String? = nil, quantity: Int, expiry: String? = nil) {
+    func addItem(UUID: String, name: String, serial: String? = nil, quantity: Int, expiry: Date? = nil) {
         let newItem: InventoryItem = InventoryItem(
             id: UUID,
             name: name,

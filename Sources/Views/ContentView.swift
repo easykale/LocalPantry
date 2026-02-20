@@ -1,14 +1,14 @@
 import SwiftUI
 import Foundation
 struct InventoryListView: View {
-    // Observing the single source of truth
     @StateObject private var store = InventoryStore() 
+    @State private var showingAddSheet = false 
     
     var body: some View {
         NavigationStack {
-            Group {
+            // FIX 1: Swapped Group for VStack to stabilize the compiler
+            VStack { 
                 if store.items.isEmpty {
-                    // S2-04 Empty State Placeholder
                     ContentUnavailableView(
                         "No Items",
                         systemImage: "shippingbox",
@@ -21,17 +21,27 @@ struct InventoryListView: View {
                         }
                     }
                 }
-            }
+            } 
             .navigationTitle("Inventory")
+            // FIX 2: Simplified the toolbar closure
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button(action: {
-                        // TODO: Trigger S2-02 Add Item Form Sheet
-                        print("Add Item Tapped")
-                    }) {
-                        Image(systemName: "plus")
-                            .fontWeight(.semibold)
-                    }
+                Button {
+                    showingAddSheet = true 
+                } label: {
+                    Image(systemName: "plus")
+                        .fontWeight(.semibold)
+                }
+            }
+            // Attached the sheet directly to the VStack
+            .sheet(isPresented: $showingAddSheet) {
+                AddItemView { name, serial, qty, expiry in
+                    store.addItem(
+                        UUID: UUID().uuidString, 
+                        name: name,
+                        serial: serial,
+                        quantity: qty,
+                        expiry: expiry 
+                    )
                 }
             }
         }
@@ -72,11 +82,11 @@ struct InventoryRowView: View {
             }
             
             // Safely unwrap your optional String expiry date
-            if let expiry = item.expiryDate, !expiry.isEmpty {
+            if let expiry: Date = item.expiryDate {
                 HStack(spacing: 4) {
                     Image(systemName: "calendar")
                         .foregroundColor(.secondary)
-                    Text("Expires: \(expiry)")
+                    Text("Expires: \(expiry, style: .date)") // SwiftUI native date formatting
                         .foregroundColor(.secondary)
                 }
                 .font(.caption2)
