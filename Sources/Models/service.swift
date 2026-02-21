@@ -12,6 +12,7 @@ struct Service {
         let url: URL = fileURL(for: "ERRORLOGS")
         let dateTime: Date = Date()
         let message: Codable = "\(dateTime): \(function), \(error)"
+        print(message)
         
         while currentAttempt < 3 {
             do {
@@ -36,11 +37,12 @@ struct Service {
                 case .failure(let error):
                     lastError = error
                     currentAttempt += 1
-                    //print("Save failed. Retrying (\(currentAttempt)/\(attempts))...")
+                    print("Save failed. Retrying (\(currentAttempt)/3...")
                     Thread.sleep(forTimeInterval: 0.1)
                 }
             }
         logError(lastError!, in: "Service.saveOrAppend")
+        print("\(lastError!):Service.saveOrAppend")
     }
     
     static func load<T: Codable>(
@@ -58,11 +60,12 @@ struct Service {
                 case .failure(let error):
                     lastError = error
                     currentAttempt += 1
-                    //print("Save failed. Retrying (\(currentAttempt)/\(attempts))...")
+                    print("Save failed. Retrying (\(currentAttempt)/3...")
                     Thread.sleep(forTimeInterval: 0.1)
                 }
             }
         logError(lastError!, in: "Service.load")
+        print("\(lastError!):Service.load")
         return []
     }
 }

@@ -50,6 +50,9 @@ struct PersistenceManager {
 
     static func loadItems<T: Codable>(_ filename: String, as type: T.Type) -> Result<[T], Error> {
         let url: URL = fileURL(for: filename)
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            return .success([]) 
+        }
         
         do {
             let data: Data = try Data(contentsOf: url)
@@ -64,6 +67,9 @@ struct PersistenceManager {
     static func loadHistory<T: Codable>(_ filename: String, as type: T.Type) -> Result<[T], Error> {
         let url: URL = fileURL(for: filename)
         var results: [T] = []
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            return .success([]) 
+        }
         
         do {
             let content: String = try String(contentsOf: url, encoding: .utf8)

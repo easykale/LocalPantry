@@ -8,6 +8,7 @@ class InventoryStore: ObservableObject{
     init() {
         self.items = Service.load(using: PersistenceManager.loadItems, toRead:  "items", as: InventoryItem.self) 
         self.history = Service.load(using: PersistenceManager.loadHistory, toRead: "history", as: TransactionLog.self)
+        print("Store initalised")
     }
     
     func addItem(UUID: String, name: String, serial: String? = nil, quantity: Int, expiry: Date? = nil) {
