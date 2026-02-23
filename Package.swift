@@ -11,7 +11,7 @@ let package = Package(
         .executableTarget(
             name: "app",
             exclude: [
-                "Tests", "Views", "MyApp.swift"
+                "ViewModels", "Tests"
             ]
             )
         

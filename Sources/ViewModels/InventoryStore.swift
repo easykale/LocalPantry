@@ -35,8 +35,8 @@ class InventoryStore: ObservableObject{
     }
 
     func removeItem(item: InventoryItem, quantityToRemove: Int) {
-        guard let index = items.firstIndex(where: { $0.id == item.id }) else { return }
-        let newQuantity = items[index].quantity - quantityToRemove
+        guard let index: Array<InventoryItem>.Index = items.firstIndex(where: { $0.id == item.id }) else { return }
+        let newQuantity: Int = items[index].quantity - quantityToRemove
         
         if newQuantity <= 0 {
             items.remove(at: index)
@@ -58,9 +58,20 @@ class InventoryStore: ObservableObject{
         return InventoryFilter.sortfilter(self.items, option)
     }
 
+    func updateItem(item: InventoryItem, newName: String, newSerialNumber: String?, newExpiryDate: Date?) {
+        guard let index: Array<InventoryItem>.Index = items.firstIndex(where: { $0.id == item.id }) else { return }
+
+        items[index].name = newName
+        items[index].serialNumber = newSerialNumber
+        items[index].expiryDate = newExpiryDate
+
+        Service.saveOrAppend(PersistenceManager.save, items, to: "items")
+        debugTools()
+    }
+
     private func logTransaction(type: Flow, item: InventoryItem, qtyChanged: Int) {
         let log: TransactionLog = TransactionLog(
-            timestamp: Date(), //time in UTC, need to use DateFormatter() for output
+            timestamp: Date(), 
             type: type,
             itemName: item.name,
             serialNumber: item.serialNumber,

@@ -1,18 +1,37 @@
 import SwiftUI
 
-struct AddItemView: View {
+struct EditItemView: View {
     @Environment(\.dismiss) private var dismiss
-    
-    @State private var name: String = ""
-    @State private var serialNumber: String = ""
-    @State private var quantity: Int = 1
-    @State private var hasExpiry: Bool = true
-    @State private var expiryDate: Date = Date()
-    
-    var onSave: (_ name: String, _ serialNumber: String?, _ quantity: Int, _ expiryDate: Date?) -> Void
+
+    @State private var name: String
+    @State private var serialNumber: String
+    @State private var hasExpiry: Bool
+    @State private var expiryDate: Date
+
+    init(item: InventoryItem, onSave: @escaping (String, String?, Date?) -> Void){
+        self._name = State(initialValue: item.name)
+
+        if let existingSerialNumber = item.serialNumber {
+            self._serialNumber = State(initalValue: existingSerialNumber)
+        } else {
+            self._serialNumber = State(initalValue: "")
+        }
+
+        if let existingExpiryDate = item.expiryDate {
+            self._expiryDate = State(initialValue: existingExpiryDate)
+            self._hasExpiry = State(initiialValue: true)
+        } else {
+            self._expiryDate = State(initialValue: Date())
+            self._hasExpiry = State(initialValue: false)
+        }
+
+        self.onSave = onSave
+    }
+
+    var onSave: (_ name: String, _ serialNumber: String?, _ expiryDate: Date?) -> Void
     
     private var isFormValid: Bool {
-        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && quantity > 0
+        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     
     var body: some View {
@@ -22,12 +41,8 @@ struct AddItemView: View {
                     TextField("Item Name", text: $name)
                     TextField("Serial Number (Optional)", text: $serialNumber)
                 }
-                
-                Section(header: Text("Stock Information")) {
-                    Stepper(value: $quantity, in: 1...10000) {
-                        Text("Quantity: \(quantity)")
-                    }
-                    
+
+                Section(header: Text("Expiry Information")) {
                     Toggle("Has Expiry Date?", isOn: $hasExpiry)
                     
                     if hasExpiry {
@@ -39,7 +54,7 @@ struct AddItemView: View {
                     }
                 }
             }
-            .navigationTitle("Add New Item")
+            .navigationTitle("Edit Item")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -48,10 +63,11 @@ struct AddItemView: View {
                 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
+                        // Format optionals before passing back
                         let finalSerial = serialNumber.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : serialNumber
                         let finalExpiry = hasExpiry ? expiryDate : nil
                         
-                        onSave(name, finalSerial, quantity, finalExpiry)
+                        onSave(name, finalSerial, finalExpiry)
                         dismiss()
                     }
                     .disabled(!isFormValid) 
