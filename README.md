@@ -10,11 +10,16 @@ Detailed Inventory Entry: Users can input new stock with granular details:
 - Item Name
 - Serial Number/SKU
 - Quantity
-- Expiry Date\n
+- Expiry Date
+
 Smart Consumption: Remove items as they are used. The app automatically calculates remaining stock or removes the item if the quantity reaches zero.
+
 Persistent Audit Log: A complete history tracking system that records every action.
+
 Inbound: Logs name, time, and quantity added.
+
 Outbound: Logs name, time, and quantity removed.
+
 Offline Persistence: Uses Swift's FileManager and JSONEncoder/Decoder to persist data between app launches. No CoreData or external databases are required.
 
 ## Technical Stack
