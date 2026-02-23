@@ -1,5 +1,5 @@
 import Foundation
-import SwiftUI
+
 struct InventoryItem: Codable, Identifiable {
     var id: String
     var name: String

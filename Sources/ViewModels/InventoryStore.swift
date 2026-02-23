@@ -1,14 +1,16 @@
 import Foundation
 import SwiftUI
+
 class InventoryStore: ObservableObject{
 
     @Published var items: [InventoryItem] = []
-    @Published var history: [TransactionLog] = [] //use as a stack
+    @Published var history: [TransactionLog] = [] 
     
     init() {
         self.items = Service.load(using: PersistenceManager.loadItems, toRead:  "items", as: InventoryItem.self) 
         self.history = Service.load(using: PersistenceManager.loadHistory, toRead: "history", as: TransactionLog.self)
         print("Store initalised")
+        debugTools()
     }
     
     func addItem(UUID: String, name: String, serial: String? = nil, quantity: Int, expiry: Date? = nil) {
@@ -29,7 +31,7 @@ class InventoryStore: ObservableObject{
         )
         
         Service.saveOrAppend(PersistenceManager.save, items, to: "items")
-        print("\(items)")
+        debugTools()
     }
 
     func removeItem(item: InventoryItem, quantityToRemove: Int) {
@@ -49,7 +51,11 @@ class InventoryStore: ObservableObject{
         )
         
         Service.saveOrAppend(PersistenceManager.save, items, to: "items")
-        print("\(items)")
+        debugTools()
+    }
+
+    func sortItems(by option: InventoryFilter.SortOption) -> [InventoryItem] {
+        return InventoryFilter.sortfilter(self.items, option)
     }
 
     private func logTransaction(type: Flow, item: InventoryItem, qtyChanged: Int) {
