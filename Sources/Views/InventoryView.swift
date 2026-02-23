@@ -2,7 +2,7 @@ import SwiftUI
 import Foundation
 
 struct InventoryListView: View {
-    @StateObject private var store = InventoryStore() 
+    @EnvironmentObject var store: InventoryStore
     @State private var showingAddSheet = false 
     @State private var itemToRemove: InventoryItem? 
     
