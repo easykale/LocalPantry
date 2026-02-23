@@ -29,28 +29,27 @@ class InventoryStore: ObservableObject{
         )
         
         Service.saveOrAppend(PersistenceManager.save, items, to: "items")
+        print("\(items)")
     }
 
     func removeItem(item: InventoryItem, quantityToRemove: Int) {
-        guard let index = items.firstIndex(where: { $0.name == item.name }) else { return }
-        let currentItem = items[index]
-        let newQuantity = currentItem.quantity - quantityToRemove
+        guard let index = items.firstIndex(where: { $0.id == item.id }) else { return }
+        let newQuantity = items[index].quantity - quantityToRemove
         
         if newQuantity <= 0 {
             items.remove(at: index)
         } else {
-            var updatedItem = currentItem
-            updatedItem.quantity = newQuantity
-            items[index] = updatedItem
+            items[index].quantity = newQuantity
         }
         
         logTransaction(
             type: .Remove,
-            item: currentItem,
+            item: item,
             qtyChanged: quantityToRemove
         )
         
         Service.saveOrAppend(PersistenceManager.save, items, to: "items")
+        print("\(items)")
     }
 
     private func logTransaction(type: Flow, item: InventoryItem, qtyChanged: Int) {

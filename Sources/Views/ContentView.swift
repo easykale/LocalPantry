@@ -1,12 +1,13 @@
 import SwiftUI
 import Foundation
+
 struct InventoryListView: View {
     @StateObject private var store = InventoryStore() 
     @State private var showingAddSheet = false 
+    @State private var itemToRemove: InventoryItem? 
     
     var body: some View {
         NavigationStack {
-            // FIX 1: Swapped Group for VStack to stabilize the compiler
             VStack { 
                 if store.items.isEmpty {
                     ContentUnavailableView(
@@ -18,12 +19,19 @@ struct InventoryListView: View {
                     List {
                         ForEach(store.items) { item in
                             InventoryRowView(item: item)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button {
+                                        itemToRemove = item
+                                    } label: {
+                                        Label("Consume", systemImage: "minus.circle")
+                                    }
+                                    .tint(.red)
+                                }
                         }
                     }
                 }
             } 
             .navigationTitle("Inventory")
-            // FIX 2: Simplified the toolbar closure
             .toolbar {
                 Button {
                     showingAddSheet = true 
@@ -32,7 +40,6 @@ struct InventoryListView: View {
                         .fontWeight(.semibold)
                 }
             }
-            // Attached the sheet directly to the VStack
             .sheet(isPresented: $showingAddSheet) {
                 AddItemView { name, serial, qty, expiry in
                     store.addItem(
@@ -44,15 +51,18 @@ struct InventoryListView: View {
                     )
                 }
             }
+            .sheet(item: $itemToRemove) { item in
+                RemoveItemView(item: item) { qty in
+                    store.removeItem(item: item, quantityToRemove: qty)
+                }
+            }
         }
     }
 }
 
-// MARK: - Supporting Row View
 struct InventoryRowView: View {
     let item: InventoryItem
     
-    // Threshold for visual indicator
     private let lowStockThreshold = 5
     
     var body: some View {
@@ -63,7 +73,6 @@ struct InventoryRowView: View {
                 
                 Spacer()
                 
-                // Quantity Indicator.
                 Text("Qty: \(item.quantity)")
                     .font(.subheadline)
                     .fontWeight(.bold)
@@ -74,19 +83,17 @@ struct InventoryRowView: View {
                     .clipShape(Capsule())
             }
             
-            // Safely unwrap the optional serial number
             if let serial = item.serialNumber, !serial.isEmpty {
                 Text("S/N: \(serial)")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             
-            // Safely unwrap your optional String expiry date
             if let expiry: Date = item.expiryDate {
                 HStack(spacing: 4) {
                     Image(systemName: "calendar")
                         .foregroundColor(.secondary)
-                    Text("Expires: \(expiry, style: .date)") // SwiftUI native date formatting
+                    Text("Expires: \(expiry, style: .date)")
                         .foregroundColor(.secondary)
                 }
                 .font(.caption2)
