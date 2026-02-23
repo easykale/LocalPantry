@@ -10,7 +10,7 @@ Detailed Inventory Entry: Users can input new stock with granular details:
 - Item Name
 - Serial Number/SKU
 - Quantity
-- Expiry Date
+- Expiry Date\n
 Smart Consumption: Remove items as they are used. The app automatically calculates remaining stock or removes the item if the quantity reaches zero.
 Persistent Audit Log: A complete history tracking system that records every action.
 Inbound: Logs name, time, and quantity added.
