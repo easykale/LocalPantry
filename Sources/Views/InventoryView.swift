@@ -3,8 +3,9 @@ import Foundation
 
 struct InventoryListView: View {
     @EnvironmentObject var store: InventoryStore
-    @State private var showingAddSheet = false 
+    @State private var showingAddSheet: Bool = false 
     @State private var itemToRemove: InventoryItem?
+    @State private var itemToEdit: InventoryItem?
     @State private var selectedSort: InventoryFilter.SortOption = .Alphabetically
     
     var body: some View {
@@ -27,6 +28,9 @@ struct InventoryListView: View {
                                         Label("Consume", systemImage: "minus.circle")
                                     }
                                     .tint(.red) 
+                                }
+                                .onTapGesture(count: 1) {
+                                    itemToEdit = item
                                 }
                         }
                     }
@@ -67,9 +71,21 @@ struct InventoryListView: View {
             }
             .sheet(item: $itemToRemove) { item in
                 RemoveItemView(item: item) { quantity in
-                    store.removeItem(item: item, quantityToRemove: quantity)
+                    store.removeItem(
+                        item: item, 
+                        quantityToRemove: quantity
+                    )
+                }  
+            }
+            .sheet(item: $itemToEdit) { item in
+                EditItemView(item: item) { name, serialNumber, expiryDate in
+                    store.updateItem(
+                        item: item, 
+                        newName: name, 
+                        newSerialNumber: serialNumber,
+                        newExpiryDate: expiryDate
+                    )
                 }
-                
             }
         }
     }
