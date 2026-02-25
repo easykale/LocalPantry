@@ -7,19 +7,24 @@ struct EditItemView: View {
     @State private var serialNumber: String
     @State private var hasExpiry: Bool
     @State private var expiryDate: Date
+    @State private var quantity: Int
 
-    init(item: InventoryItem, onSave: @escaping (String, String?, Date?) -> Void){
+    private let originalQuantity: Int
+
+    init(item: InventoryItem, onSave: @escaping (String, String?, Date?, Int) -> Void){
         self._name = State(initialValue: item.name)
+        self._quantity = State(initialValue: item.quantity)
+        self.originalQuantity = item.quantity
 
         if let existingSerialNumber = item.serialNumber {
-            self._serialNumber = State(initalValue: existingSerialNumber)
+            self._serialNumber = State(initialValue: existingSerialNumber)
         } else {
-            self._serialNumber = State(initalValue: "")
+            self._serialNumber = State(initialValue: "")
         }
 
         if let existingExpiryDate = item.expiryDate {
             self._expiryDate = State(initialValue: existingExpiryDate)
-            self._hasExpiry = State(initiialValue: true)
+            self._hasExpiry = State(initialValue: true)
         } else {
             self._expiryDate = State(initialValue: Date())
             self._hasExpiry = State(initialValue: false)
@@ -28,7 +33,7 @@ struct EditItemView: View {
         self.onSave = onSave
     }
 
-    var onSave: (_ name: String, _ serialNumber: String?, _ expiryDate: Date?) -> Void
+    var onSave: (_ name: String, _ serialNumber: String?, _ expiryDate: Date?, _ quantity: Int) -> Void
     
     private var isFormValid: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -41,8 +46,10 @@ struct EditItemView: View {
                     TextField("Item Name", text: $name)
                     TextField("Serial Number (Optional)", text: $serialNumber)
                 }
-
-                Section(header: Text("Expiry Information")) {
+                Section(header: Text("Stock Information")) {
+                    Stepper(value: $quantity, in: originalQuantity...10000) {
+                        Text("Quantity: \(quantity)")
+                    }
                     Toggle("Has Expiry Date?", isOn: $hasExpiry)
                     
                     if hasExpiry {
@@ -67,7 +74,7 @@ struct EditItemView: View {
                         let finalSerial = serialNumber.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : serialNumber
                         let finalExpiry = hasExpiry ? expiryDate : nil
                         
-                        onSave(name, finalSerial, finalExpiry)
+                        onSave(name, finalSerial, finalExpiry, quantity)
                         dismiss()
                     }
                     .disabled(!isFormValid) 

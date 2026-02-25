@@ -85,6 +85,7 @@ struct InventoryListView: View {
                         newName: name, 
                         newSerialNumber: serialNumber,
                         newExpiryDate: expiryDate
+                        newQuantity: 
                     )
                 }
             }

@@ -69,14 +69,24 @@ class InventoryStore: ObservableObject{
         }
     }
 
-    func updateItem(item: InventoryItem, newName: String, newSerialNumber: String?, newExpiryDate: Date?) {
+    func updateItem(item: InventoryItem, newName: String, newSerialNumber: String?, newExpiryDate: Date?, newQuantity: Int) {
         guard let index: Array<InventoryItem>.Index = items.firstIndex(where: { $0.id == item.id }) else { return }
 
         let cleanExpiryDate = newExpiryDate.map { Calendar.current.startOfDay(for: $0) }
+        let quantityChange = newQuantity - items[index].quantity
 
         items[index].name = newName
         items[index].serialNumber = newSerialNumber
         items[index].expiryDate = cleanExpiryDate
+        items[index].quantity = newQuantity
+
+        if quantityChange > 0 {
+            logTransaction(
+                type: .Add,
+                item: items[index],
+                qtyChanged: quantityChange
+                )
+        }
 
         if trymergeDuplicateItems(item: items[index]) {
             items.remove(at: index)
@@ -109,7 +119,7 @@ class InventoryStore: ObservableObject{
         )
 
         history.append(log)
-        Service.saveOrAppend(PersistenceManager.append, history, to: "history")
+        Service.saveOrAppend(PersistenceManager.append, log, to: "history")
     }
 
     private func debugTools() {

@@ -48,10 +48,11 @@ class ShoppingListStore: ObservableObject {
         debugTools()
     }
 
-    func updateItem(item: CartItem, newName: String) {
+    func updateItem(item: CartItem, newName: String, newQuantity: Int) {
         guard let index = cartItems.firstIndex(where: { $0.id == item.id }) else { return }
 
         cartItems[index].name = newName
+        cartItems[index].quantity = newQuantity
 
         if trymergeDuplicateItems(item: cartItems[index]) {
             cartItems.remove(at: index)

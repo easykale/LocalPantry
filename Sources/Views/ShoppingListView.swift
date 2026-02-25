@@ -85,10 +85,11 @@ struct ShoppingListView: View {
                 }  
             }
             .sheet(item: $itemToEdit) { item in
-                EditCartItemView(item: item) { name in
+                EditCartItemView(item: item) { name, quantity in
                     store.updateItem(
                         item: item, 
-                        newName: name
+                        newName: name,
+                        newQuantity: quantity
                     )
                 }
             }
