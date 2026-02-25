@@ -4,7 +4,7 @@ struct AddCartItemView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var inventoryStore: InventoryStore
     @EnvironmentObject var shoppingListStore: ShoppingListStore
-    @State private var recommendedItems: [String] = []
+    @State private var recommendedItems: [RecommendedItem] = []
     @State private var name: String = ""
     @State private var quantity: Int = 1
     
@@ -29,9 +29,10 @@ struct AddCartItemView: View {
                             HStack {
                                 ForEach(recommendedItems, id: \.self) { item in
                                     Button(action: {
-                                        self.name = item
+                                        self.name = item.name
+                                        self.quantity = item.quantity
                                     }) {
-                                        Text(item)
+                                        Text("\(item.name) (\(item.quantity))")
                                             .padding(.horizontal, 12)
                                             .padding(.vertical, 6)
                                             .background(Color.blue.opacity(0.1))

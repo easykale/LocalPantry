@@ -27,3 +27,8 @@ struct CartItem: Codable, Identifiable, Equatable {
     var quantity: Int
     var isChecked: Bool
 }
+
+struct RecommendedItem: Hashable {
+    let name: String
+    let quantity: Int
+}

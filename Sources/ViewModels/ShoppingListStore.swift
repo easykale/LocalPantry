@@ -73,7 +73,7 @@ class ShoppingListStore: ObservableObject {
         }
     }
 
-    func getRecommendations(inventoryHistory: [TransactionLog], currentCart: [CartItem]) -> [String] {
+    func getRecommendations(inventoryHistory: [TransactionLog]) -> [RecommendedItem] {
         let calendar = Calendar.current
         let sevenDaysAgo = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
         
@@ -81,15 +81,21 @@ class ShoppingListStore: ObservableObject {
             log.type == .Remove && log.timestamp >= sevenDaysAgo
         }
         
-        let removedItemNames = Array(Set(recentRemovals.map { $0.itemName }))
-        
-        let currentCartNames = Set(currentCart.map { $0.name.lowercased() })
-        
-        let recommendations = removedItemNames.filter { name in
-            !currentCartNames.contains(name.lowercased())
+        var consumedQuantities: [String: Int] = [:]
+        for log in recentRemovals {
+            consumedQuantities[log.itemName, default: 0] += log.quantityChanged
         }
         
-        return recommendations.sorted()
+        let currentCartNames = Set(self.cartItems.map { $0.name.lowercased() })
+        
+        let recommendations = consumedQuantities.compactMap { (name, totalQuantity) -> RecommendedItem? in
+            if currentCartNames.contains(name.lowercased()) {
+                return nil
+            }
+            return RecommendedItem(name: name, quantity: totalQuantity)
+        }
+
+        return recommendations.sorted { $0.name < $1.name }
     }
     
     private func trymergeDuplicateItems(item: CartItem) -> Bool {
