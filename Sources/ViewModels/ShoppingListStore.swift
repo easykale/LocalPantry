@@ -17,8 +17,10 @@ class ShoppingListStore: ObservableObject {
             quantity: quantity, 
             isChecked: false
             )
+        if !trymergeDuplicateItems(item: newItem) {
+            cartItems.append(newItem)
+        }
 
-        cartItems.append(newItem)
         save()
         debugTools()
     }
@@ -51,6 +53,10 @@ class ShoppingListStore: ObservableObject {
 
         cartItems[index].name = newName
 
+        if trymergeDuplicateItems(item: cartItems[index]) {
+            cartItems.remove(at: index)
+        }
+
         save()
         debugTools()
     }
@@ -72,6 +78,19 @@ class ShoppingListStore: ObservableObject {
         }
     }
     
+    private func trymergeDuplicateItems(item: CartItem) -> Bool {
+        guard let index = self.cartItems.firstIndex(where: {
+            $0.id != item.id &&
+            $0.name.lowercased() == item.name.lowercased() &&
+            !$0.isChecked &&
+            !item.isChecked
+        }) else {
+            return false
+        }
+        self.cartItems[index].quantity += item.quantity
+        return true
+    }
+
     private func save() {
         Service.saveOrAppend(PersistenceManager.save, cartItems, to: "cart")
     }

@@ -24,8 +24,8 @@ class InventoryStore: ObservableObject{
             expiryDate: cleanExpiryDate
         )
 
-        if !trymergeDuplicateItems(item: newItem){
-        items.append(newItem)
+        if !trymergeDuplicateItems(item: newItem) {
+            items.append(newItem)
         }
 
         logTransaction(
