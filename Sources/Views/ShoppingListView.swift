@@ -26,46 +26,56 @@ struct ShoppingListView: View {
                             ShoppingListRowView(
                                 item: item,
                                 currentSort: selectedSort,
-                                onToggle: { store.toggleItem(item) }
+                                onToggle: { store.toggleItem(item) },
+                                onEdit: { itemToEdit = item },
+                                onDelete: { store.removeItem(item: item) }
                             )
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(role: .destructive) {
-                                    store.removeItem(item: item)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            }
-                             .onTapGesture(count: 1) {
-                                    itemToEdit = item
-                            }
                         }
                     }
                 }
             }
             .navigationTitle("Shopping List")
+            .searchable(text: $searchViewModel.searchText, prompt: "Search for an item")
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItem(placement: .topBarLeading) {
+                    if store.cartItems.contains(where: { $0.isChecked }) {
+                        Button("Clear") {
+                            store.clearCompleted()
+                        }
+                        .foregroundColor(.red)
+                    }
+                }
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Menu {
+                        Picker("Sort Options", selection: $selectedSort) {
+                            Text("Alphabetical").tag(ShoppingListFilter.SortOption.Alphabetically)
+                            Text("Quantity (Ascending)").tag(ShoppingListFilter.SortOption.NumericallyAscending)
+                            Text("Quantity (Descending)").tag(ShoppingListFilter.SortOption.NumericallyDescending)
+                        }
+                    } label: {
+                        Image(systemName: "line.3.horizontal.decrease.circle")
+                            .fontWeight(.semibold)
+                    }
+                    
                     Button {
-                        showingAddSheet = true
+                        showingAddSheet = true 
                     } label: {
                         Image(systemName: "plus")
+                            .fontWeight(.semibold)
                     }
                 }
             }
             .sheet(isPresented: $showingAddSheet) {
                 AddCartItemView { name, quantity in
-                    store.addItem(
-                        name: name, 
-                        quantity: quantity
-                    )
+                    store.addItem(name: name, quantity: quantity)
                 }
             }
             .sheet(item: $itemToEdit) { item in
-                EditCartItemView(item: item) { newName, quantity in
+                EditCartItemView(item: item) { newName, newQuantity in
                     store.updateItem(
                         item: item, 
                         newName: newName, 
-                        newQuantity: quantity
+                        newQuantity: newQuantity
                     )
                 }
             }
@@ -77,6 +87,8 @@ struct ShoppingListRowView: View {
     let item: CartItem
     let currentSort: ShoppingListFilter.SortOption 
     let onToggle: () -> Void
+    let onEdit: () -> Void     
+    let onDelete: () -> Void   
     
     var body: some View {
         HStack(spacing: 12) {
@@ -104,10 +116,16 @@ struct ShoppingListRowView: View {
                 .clipShape(Capsule())
         }
         .padding(.vertical, 4)
+        .contentShape(Rectangle()) 
+        .onTapGesture {
+            onEdit()
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button(role: .destructive) {
+                onDelete()
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
     }
-}
-
-#Preview {
-    ShoppingListView()
-        .environmentObject(ShoppingListStore())
 }

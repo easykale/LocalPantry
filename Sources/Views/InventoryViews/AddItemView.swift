@@ -23,7 +23,7 @@ struct AddItemView: View {
                     TextField("Serial Number (Optional)", text: $serialNumber)
                 }
                 
-                Section(header: Text("Stock Information")) {
+                Section(header: Text("Item Information")) {
                     Stepper(value: $quantity, in: 1...10000) {
                         Text("Quantity: \(quantity)")
                     }

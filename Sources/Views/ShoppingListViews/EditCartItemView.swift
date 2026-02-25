@@ -27,7 +27,7 @@ struct EditCartItemView: View {
                 Section(header: Text("Item Name")) {
                     TextField("Item Name", text: $name)
                 }
-                Section(header: Text("Stock Information")) {
+                Section(header: Text("Item Information")) {
                     Stepper(value: $quantity, in: originalQuantity...10000) {
                         Text("Quantity: \(quantity)")
                     }
