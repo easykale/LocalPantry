@@ -14,16 +14,20 @@ class InventoryStore: ObservableObject{
     }
     
     func addItem(UUID: String, name: String, serial: String? = nil, quantity: Int, expiry: Date? = nil) {
+        let cleanExpiryDate: Date? = expiry.map { Calendar.current.startOfDay(for: $0) }
+
         let newItem: InventoryItem = InventoryItem(
             id: UUID,
             name: name,
             serialNumber: serial,
             quantity: quantity,
-            expiryDate: expiry
+            expiryDate: cleanExpiryDate
         )
-        
+
+        if !trymergeDuplicateItems(item: newItem){
         items.append(newItem)
-    
+        }
+
         logTransaction(
             type: .Add,
             item: newItem,
@@ -68,12 +72,31 @@ class InventoryStore: ObservableObject{
     func updateItem(item: InventoryItem, newName: String, newSerialNumber: String?, newExpiryDate: Date?) {
         guard let index: Array<InventoryItem>.Index = items.firstIndex(where: { $0.id == item.id }) else { return }
 
+        let cleanExpiryDate = newExpiryDate.map { Calendar.current.startOfDay(for: $0) }
+
         items[index].name = newName
         items[index].serialNumber = newSerialNumber
-        items[index].expiryDate = newExpiryDate
+        items[index].expiryDate = cleanExpiryDate
+
+        if trymergeDuplicateItems(item: items[index]) {
+            items.remove(at: index)
+        }
 
         Service.saveOrAppend(PersistenceManager.save, items, to: "items")
         debugTools()
+    }
+
+    private func trymergeDuplicateItems(item: InventoryItem) -> Bool {
+        guard let index: Array<InventoryItem>.Index = self.items.firstIndex(where: {
+            $0.id != item.id &&
+            $0.name.lowercased() == item.name.lowercased() &&
+            $0.expiryDate == item.expiryDate &&
+            $0.serialNumber == item.serialNumber
+        }) else {
+            return false
+        }
+        self.items[index].quantity += item.quantity
+        return true
     }
 
     private func logTransaction(type: Flow, item: InventoryItem, qtyChanged: Int) {
