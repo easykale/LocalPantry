@@ -3,6 +3,7 @@ import Foundation
 
 struct InventoryListView: View {
     @EnvironmentObject var store: InventoryStore
+    @StateObject private var searchViewModel = SearchViewModel()
     @State private var showingAddSheet: Bool = false 
     @State private var itemToRemove: InventoryItem?
     @State private var itemToEdit: InventoryItem?
@@ -19,7 +20,7 @@ struct InventoryListView: View {
                     )
                 } else {
                     List {
-                        ForEach(store.sortItems(by: selectedSort)) { item in
+                        ForEach(store.filterAndSortItems(query: searchViewModel.debouncedText, by: selectedSort)) { item in
                             InventoryRowView(item: item, currentSort: selectedSort)
                                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                     Button {
@@ -37,6 +38,7 @@ struct InventoryListView: View {
                 }
             } 
             .navigationTitle("Inventory")
+            .searchable(text: $searchViewModel.searchText, prompt: "Search for an item")
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Menu {
