@@ -13,11 +13,11 @@ class InventoryStore: ObservableObject{
         debugTools()
     }
     
-    func addItem(UUID: String, name: String, serial: String? = nil, quantity: Int, expiry: Date? = nil) {
+    func addItem(name: String, serial: String? = nil, quantity: Int, expiry: Date? = nil) {
         let cleanExpiryDate: Date? = expiry.map { Calendar.current.startOfDay(for: $0) }
 
         let newItem: InventoryItem = InventoryItem(
-            id: UUID,
+            id: UUID().uuidString,
             name: name,
             serialNumber: serial,
             quantity: quantity,
@@ -112,7 +112,7 @@ class InventoryStore: ObservableObject{
         Service.saveOrAppend(PersistenceManager.append, history, to: "history")
     }
 
-    func debugTools() {
+    private func debugTools() {
         print(history)
         print(items)
     }

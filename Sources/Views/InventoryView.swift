@@ -16,7 +16,7 @@ struct InventoryListView: View {
                     ContentUnavailableView(
                         "No Items",
                         systemImage: "shippingbox",
-                        description: Text("Tap the + button to add inventory.")
+                        description: Text("Tap the + button to add items.")
                     )
                 } else {
                     List {
@@ -63,7 +63,6 @@ struct InventoryListView: View {
             .sheet(isPresented: $showingAddSheet) {
                 AddItemView { name, serial, qty, expiry in
                     store.addItem(
-                        UUID: UUID().uuidString, 
                         name: name,
                         serial: serial,
                         quantity: qty,
