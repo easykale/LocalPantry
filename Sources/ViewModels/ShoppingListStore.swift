@@ -34,16 +34,10 @@ class ShoppingListStore: ObservableObject {
         debugTools()
     }
     
-    func removeItem(item: CartItem, quantityToRemove: Int) {
+    func removeItem(item: CartItem) {
         guard let index = cartItems.firstIndex(where: { $0.id == item.id }) else { return }
-        let newQuantity: Int = cartItems[index].quantity - quantityToRemove
         
-        if newQuantity <= 0 {
-            cartItems.remove(at: index)
-        } else {
-            cartItems[index].quantity = newQuantity
-        }
-        
+        cartItems.remove(at: index)
         save()
         debugTools()
     }

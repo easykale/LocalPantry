@@ -79,13 +79,13 @@ struct InventoryListView: View {
                 }  
             }
             .sheet(item: $itemToEdit) { item in
-                EditItemView(item: item) { name, serialNumber, expiryDate in
+                EditItemView(item: item) { name, serialNumber, expiryDate, quantity, in
                     store.updateItem(
                         item: item, 
                         newName: name, 
                         newSerialNumber: serialNumber,
                         newExpiryDate: expiryDate
-                        newQuantity: 
+                        newQuantity: quantity
                     )
                 }
             }

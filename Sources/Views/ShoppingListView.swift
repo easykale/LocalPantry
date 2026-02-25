@@ -1,94 +1,70 @@
 import SwiftUI
-import Foundation
 
 struct ShoppingListView: View {
     @EnvironmentObject var store: ShoppingListStore
     @StateObject private var searchViewModel = SearchViewModel()
     @State private var selectedSort: ShoppingListFilter.SortOption = .Alphabetically
     @State private var showingAddSheet: Bool = false
-    @State private var itemToRemove: CartItem?
     @State private var itemToEdit: CartItem?
+    
+    private var filteredItems: [CartItem] {
+        store.filterAndSortItems(query: searchViewModel.debouncedText, by: selectedSort)
+    }
     
     var body: some View {
         NavigationStack {
             VStack { 
                 if store.cartItems.isEmpty {
                     ContentUnavailableView(
-                        "No Grocceries",
+                        "No Groceries",
                         systemImage: "cart",
                         description: Text("Tap the + button to add items.")
                     )
                 } else {
                     List {
-                        ForEach(store.filterAndSortItems(query: searchViewModel.debouncedText, by: selectedSort)) { item in
-                            ShoppingListRowView(item: item, currentSort: selectedSort, onToggle: { store.toggleItem(item) })
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button {
-                                        itemToRemove = item
-                                    } label: {
-                                        Label("Remove", systemImage: "minus.circle")
-                                    }
-                                    .tint(.red) 
+                        ForEach(filteredItems) { item in
+                            ShoppingListRowView(
+                                item: item,
+                                currentSort: selectedSort,
+                                onToggle: { store.toggleItem(item) }
+                            )
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    store.removeItem(item: item)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
                                 }
-                                .onTapGesture(count: 1) {
+                            }
+                             .onTapGesture(count: 1) {
                                     itemToEdit = item
-                                }
+                            }
                         }
                     }
                 }
             }
             .navigationTitle("Shopping List")
-            .searchable(text: $searchViewModel.searchText, prompt: "Search for an item")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    if store.cartItems.contains(where: { $0.isChecked }) {
-                        Button("Clear") {
-                            store.clearCompleted()
-                        }
-                        .foregroundColor(.red)
-                    }
-                }
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    Menu {
-                        Picker("Sort Options", selection: $selectedSort) {
-                            Text("Alphabetical").tag(ShoppingListFilter.SortOption.Alphabetically)
-                            Text("Quantity (Ascending)").tag(ShoppingListFilter.SortOption.NumericallyAscending)
-                            Text("Quantity (Descending)").tag(ShoppingListFilter.SortOption.NumericallyDescending)
-                        }
-                    } label: {
-                        Image(systemName: "line.3.horizontal.decrease.circle")
-                            .fontWeight(.semibold)
-                    }
-
+                ToolbarItem(placement: .primaryAction) {
                     Button {
-                        showingAddSheet = true 
+                        showingAddSheet = true
                     } label: {
                         Image(systemName: "plus")
-                            .fontWeight(.semibold)
                     }
                 }
             }
             .sheet(isPresented: $showingAddSheet) {
-                AddCartItemView { name, qty in
+                AddCartItemView { name, quantity in
                     store.addItem(
-                        name: name,
-                        quantity: qty
+                        name: name, 
+                        quantity: quantity
                     )
                 }
             }
-            .sheet(item: $itemToRemove) { item in
-                RemoveCartItemView(item: item) { quantity in
-                    store.removeItem(
-                        item: item, 
-                        quantityToRemove: quantity
-                    )
-                }  
-            }
             .sheet(item: $itemToEdit) { item in
-                EditCartItemView(item: item) { name, quantity in
+                EditCartItemView(item: item) { newName, quantity in
                     store.updateItem(
                         item: item, 
-                        newName: name,
+                        newName: newName, 
                         newQuantity: quantity
                     )
                 }
