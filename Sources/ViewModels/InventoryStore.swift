@@ -54,8 +54,15 @@ class InventoryStore: ObservableObject{
         debugTools()
     }
 
-    func sortItems(by option: InventoryFilter.SortOption) -> [InventoryItem] {
-        return InventoryFilter.sortfilter(self.items, option)
+    func filterAndSortItems(query: String, by option: InventoryFilter.SortOption) -> [InventoryItem] {
+        let sorted = InventoryFilter.sortfilter(self.items, option)
+
+        guard !query.trimmingCharacters(in: .whitespaces).isEmpty else { 
+            return sorted 
+        }
+        return sorted.filter {item in
+        item.name.localizedCaseInsensitiveContains(query)
+        }
     }
 
     func updateItem(item: InventoryItem, newName: String, newSerialNumber: String?, newExpiryDate: Date?) {
