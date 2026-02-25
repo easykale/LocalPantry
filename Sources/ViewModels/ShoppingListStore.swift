@@ -72,6 +72,25 @@ class ShoppingListStore: ObservableObject {
         item.name.localizedCaseInsensitiveContains(query)
         }
     }
+
+    func getRecommendations(inventoryHistory: [TransactionLog], currentCart: [CartItem]) -> [String] {
+        let calendar = Calendar.current
+        let sevenDaysAgo = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        
+        let recentRemovals = inventoryHistory.filter { log in
+            log.type == .Remove && log.timestamp >= sevenDaysAgo
+        }
+        
+        let removedItemNames = Array(Set(recentRemovals.map { $0.itemName }))
+        
+        let currentCartNames = Set(currentCart.map { $0.name.lowercased() })
+        
+        let recommendations = removedItemNames.filter { name in
+            !currentCartNames.contains(name.lowercased())
+        }
+        
+        return recommendations.sorted()
+    }
     
     private func trymergeDuplicateItems(item: CartItem) -> Bool {
         guard let index = self.cartItems.firstIndex(where: {
